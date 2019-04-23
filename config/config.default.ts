@@ -24,10 +24,20 @@ export default (appInfo: EggAppInfo) => {
     usernameField: 'username',
     passwordField: 'password',
   };
+  config.bodyParser = {
+    jsonLimit: '6mb',
+    formLimit: '6mb',
+  }
   config.mongoose = {
     url: 'mongodb://127.0.0.1:27017/test',
     options: {},
   };
+  config.security = {
+    csrf: false,
+  }
+  config.cors = {
+    origin: '*'
+  }
   // the return config will combines to EggAppConfig
   return {
     ...config,

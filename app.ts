@@ -1,4 +1,4 @@
-import { Application } from 'egg';
+import { Application, Context } from 'egg';
 const LocalStrategy = require('passport-local').Strategy;
 
 // const mongoose = require('mongoose');
@@ -14,7 +14,10 @@ module.exports = (app: Application) => {
   config.passReqToCallback = true;
   app.passport.verify(async (ctx, user) => {
     ctx.logger.debug('passport.verify', user);
-    const result = await ctx.service.user.find({username: user.username, password: user.password});
+    const result = await ctx.service.user.find({
+      username: user.username,
+      password: user.password,
+    });
     console.log('passport.verify', result);
     if (result.length > 0) {
       return result[0];
@@ -34,4 +37,15 @@ module.exports = (app: Application) => {
       app.passport.doVerify(req, user, done);
     }),
   );
+  app.passport.serializeUser(async (ctx: Context, user: any) => {
+    console.log(user, 'serializeUser');
+    console.log(ctx.request.header.cookie);
+    return user;
+  });
+  app.passport.deserializeUser(async (ctx: Context, user: any) => {
+    console.log(user, 'deserializeUser');
+    console.log(ctx.request.header.cookie);
+    user.ss = 'aabb';
+    return user;
+  });
 };
