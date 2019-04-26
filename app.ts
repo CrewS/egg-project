@@ -1,4 +1,4 @@
-import { Application } from 'egg';
+import { Application, Context } from 'egg';
 const LocalStrategy = require('passport-local').Strategy;
 
 // const mongoose = require('mongoose');
@@ -12,13 +12,19 @@ const LocalStrategy = require('passport-local').Strategy;
 module.exports = (app: Application) => {
   const config = app.config.passportLocal;
   config.passReqToCallback = true;
-  app.passport.verify(async (ctx, user) => {
+  app.passport.verify(async (ctx: Context, user) => {
     ctx.logger.debug('passport.verify', user);
-    const result = await ctx.service.user.find({username: user.username, password: user.password});
-    console.log('passport.verify', result);
-    if (result.length > 0) {
-      return result[0];
+    const result = await ctx.service.user.find(user.username);
+    // const passhash = ctx.helper;
+    // console.log('passport.verify', ctx.request);
+    
+    if (result) {
+      if (ctx.helper.bcompare(user.password, result.password)){
+        ctx.req.session.abc = 123;
+        return result;
+      }
     }
+    // throw new Error(JSON.stringify({message: '密码不对'}));
     return false;
   });
   app.passport.use(
@@ -34,4 +40,9 @@ module.exports = (app: Application) => {
       app.passport.doVerify(req, user, done);
     }),
   );
+  app.passport.deserializeUser(async (_ctx: Context, user) => {
+    if (user) {
+    }
+    return user;
+  });
 };

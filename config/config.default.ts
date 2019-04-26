@@ -28,6 +28,11 @@ export default (appInfo: EggAppInfo) => {
     url: 'mongodb://127.0.0.1:27017/test',
     options: {},
   };
+  config.security = {
+    csrf: {
+      ignore: '/api/*/*',
+    },
+  };
   // the return config will combines to EggAppConfig
   return {
     ...config,

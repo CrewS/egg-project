@@ -10,6 +10,6 @@ export default (app: Application) => {
   router.get('/user/add', controller.user.add);
   router.get('/user/find', controller.user.find);
   router.get('/api/user/get', userRequired, controller.api.user.get);
-
+  router.post('/signup', controller.login.signup);
   router.post('/auth', app.passport.authenticate('local', { successRedirect: '/admin',failureRedirect: '/login', }));
 };
